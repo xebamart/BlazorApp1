@@ -1,0 +1,60 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<BsButton Variant="BsButtonVariants.Primary" ClickEvent="ShowOffcanvas">Formulario</BsButton>
+
+<BsOffcanvas @ref="_offcanvas" CssClass="w-75" ShowCloseButton="false" Placement="BsOffcanvasPlacements.End" UseStaticBackdrop="true">
+    <BsButtonGroup CssClass="mb-2" AriaLabel="Comandos">
+        <BsButton Variant="BsButtonVariants.Secondary" title="Volver" ><BsIcon Icon="BsIconType.BiArrowLeft"/></BsButton>
+        <BsButton Variant="BsButtonVariants.Secondary" type="button" data-bs-dismiss="offcanvas" aria-label="Close" title="Cerrar"><BsIcon Icon="BsIconType.BiXLg"/></BsButton>
+    </BsButtonGroup>
+    <EditForm Model="_user" OnValidSubmit="OnSaveAsync">
+        <div class="mb-3">
+            <label class="form-label">Perfil:</label>
+            <SfDropDownList CssClass="form-control" TValue="Guid" TItem="ProfileDto"
+                            Placeholder="Selecciona un perfil" DataSource="_profiles"
+                            AllowFiltering="true" SortOrder="SortOrder.Ascending"
+                            @bind-Value="_user.ProfileId">
+                <DropDownListFieldSettings Value="@nameof(ProfileDto.ProfileId)" Text="@nameof(ProfileDto.Title)"/>
+            </SfDropDownList>
+            <ValidationMessage For="@(() => _user.ProfileId)"/>
+        </div>
+    </EditForm>
+</BsOffcanvas>
+
+@code {
+    private List<ProfileDto>? _profiles = [];
+    private BsOffcanvas _offcanvas = null;
+    private User _user = new User();
+
+    protected override void OnInitialized()
+    {
+        _profiles = Enumerable.Range(0, 100).Select(x => new ProfileDto { ProfileId = Guid.NewGuid(), Title = $"Profile {x}" }).ToList();
+    }
+    
+    private async Task ShowOffcanvas()
+    {
+        await _offcanvas.ShowAsync();
+    }
+
+    class User
+    {
+        public Guid ProfileId { get; set; }
+    }
+    
+    class ProfileDto
+    {
+        public Guid ProfileId { get; set; }
+        public string? Title { get; set; }
+    }
+
+    private async Task OnSaveAsync()
+    {
+        await Task.CompletedTask;
+    }
+}
